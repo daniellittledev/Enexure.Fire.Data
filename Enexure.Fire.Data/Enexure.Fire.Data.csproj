@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DF72FF9D-0F62-4147-A8D2-B35A208CAA3F}</ProjectGuid>
+    <ProjectGuid>{5F695F79-2723-47EE-A979-0D484E083FBC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Enexure.Fire.Data</RootNamespace>
