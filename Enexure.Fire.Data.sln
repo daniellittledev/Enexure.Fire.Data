@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enexure.Fire.Data", "src\Enexure.Fire.Data\Enexure.Fire.Data.csproj", "{5F695F79-2723-47EE-A979-0D484E083FBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enexure.Fire.Data.Tests", "Enexure.Fire.Data.Tests\Enexure.Fire.Data.Tests.csproj", "{6293E6C7-414A-4FF2-BE6D-E10D0947C658}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enexure.Fire.Data.Tests", "src\Enexure.Fire.Data.Tests\Enexure.Fire.Data.Tests.csproj", "{6293E6C7-414A-4FF2-BE6D-E10D0947C658}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
