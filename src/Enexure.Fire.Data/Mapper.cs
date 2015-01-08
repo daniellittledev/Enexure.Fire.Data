@@ -1,106 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Dynamic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading.Tasks;
 
 namespace Enexure.Fire.Data
 {
-	public class DataResult : DataResultBase, IDataResult
-	{
-		private readonly DbDataReader dataReader;
-		
-		public DataResult(DbDataReader dataReader)
-		{
-			this.dataReader = dataReader;
-		}
-
-		public IList<T> ToList<T>()
-		{
-			var list = new List<T>();
-			var mapper = new Mapper(typeof(T));
-			var length = dataReader.FieldCount;
-			var keyMappings = GetKeyMappings(dataReader, length);
-
-			while (dataReader.Read()) {
-				GetValue(dataReader, mapper, length, keyMappings, list);
-			}
-			return list;
-		}
-
-		public T Single<T>()
-		{
-			return ToList<T>().Single();
-		}
-
-		public T SingleOrDefault<T>()
-			where T : class
-		{
-			return ToList<T>().SingleOrDefault();
-		}
-	}
-
-	public class DataResultAsync : DataResultBase, IDataResultAsync
-	{
-		private readonly Func<Task<DbDataReader>> readerProvider;
-
-		public DataResultAsync(Func<Task<DbDataReader>> readerProvider)
-		{
-			this.readerProvider = readerProvider;
-		}
-
-		public async Task<IList<T>> ToListAsync<T>()
-		{
-			var reader = await readerProvider();
-
-			var list = new List<T>();
-			var mapper = new Mapper(typeof(T));
-			var length = reader.FieldCount;
-			var keyMappings = GetKeyMappings(reader, length);
-
-			while (await reader.ReadAsync()) {
-				GetValue(reader, mapper, length, keyMappings, list);
-			}
-			return list;
-		}
-
-		public async Task<T> SingleAsync<T>()
-		{
-			return (await ToListAsync<T>()).Single();
-		}
-
-		public async Task<T> SingleOrDefaultAsync<T>()
-			where T : class 
-		{
-			return (await ToListAsync<T>()).SingleOrDefault();
-		}
-	}
-
-	public abstract class DataResultBase
-	{
-		internal static void GetValue<T>(DbDataReader dataReader, Mapper mapper, int length, Dictionary<int, string> keyMappings, List<T> list)
-		{
-			var row = mapper.GetRowInstance();
-			var rowMapper = mapper.GetMapper(row);
-
-			for (var i = 0; i < length; i++) {
-				rowMapper(keyMappings[i], dataReader.GetValue(i));
-			}
-
-			list.Add((T)row);
-		}
-
-		protected static Dictionary<int, string> GetKeyMappings(DbDataReader dataReader, int length)
-		{
-			return Enumerable
-				.Range(0, length)
-				.ToDictionary(index => index, dataReader.GetName);
-		}
-	}
-
 	internal class Mapper
 	{
 		private readonly Type type;
