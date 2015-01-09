@@ -1,5 +1,6 @@
 Enexure.Fire.Data
 =================
+[![Build status](https://ci.appveyor.com/api/projects/status/dk0sbl83c7u19rpt?svg=true)](https://ci.appveyor.com/project/Daniel45729/enexure-fire-data)
 
 Fire.Data is a wrapper over System.Data that providies session like transaction management. Simplified command creation and simplified async usage.
 
