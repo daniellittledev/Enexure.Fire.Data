@@ -52,7 +52,7 @@ namespace Enexure.Fire.Data
 			// Dynamic is passed in as Object
 			if (resultType == ResultType.Dynamic || resultType == ResultType.Dictionary) {
 
-				var dyn = (IDictionary<string, object>)new ExpandoObject();
+				var dyn = (IDictionary<string, object>)instance;
 				return dyn.Add;
 			}
 

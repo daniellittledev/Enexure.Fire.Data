@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Enexure.Fire.Data
 {
-	public class UnitOfWork : IDisposable
+	public class UnitOfWork : IUnitOfWork
 	{
 		private readonly DbConnection connection;
 		private readonly IsolationLevel isolationLevel;
@@ -15,33 +15,35 @@ namespace Enexure.Fire.Data
 
 		public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
 		{
-			if (connection == null) throw new ArgumentNullException("connection");
+			if (connection == null) throw new ArgumentNullException("connection", "You must specify a connection");
 
 			this.connection = connection;
 			this.isolationLevel = isolationLevel;
 		}
 
-		internal void Begin()
+		internal DbTransaction GetOrCreateTransaction()
 		{
 			if (connection.State == ConnectionState.Closed) {
 				connection.Open();
 			}
+
+			return GetTransaction();
 		}
 
-		internal Task BeginAsync()
+		internal Task<DbTransaction> GetOrCreateTransactionAsync()
 		{
-			return BeginAsync(CancellationToken.None);
+			return GetOrCreateTransactionAsync(CancellationToken.None);
 		}
 
-		internal Task BeginAsync(CancellationToken cancellationToken)
+		internal async Task<DbTransaction> GetOrCreateTransactionAsync(CancellationToken cancellationToken)
 		{
 			if (connection.State == ConnectionState.Closed) {
-				return connection.OpenAsync(cancellationToken);
+				await connection.OpenAsync(cancellationToken);
 			}
-			return Task.FromResult(true);
+			return GetTransaction();
 		}
 
-		private DbTransaction GetCurrentTransaction()
+		private DbTransaction GetTransaction()
 		{
 			return transaction ?? (transaction = connection.BeginTransaction(isolationLevel));
 		}
@@ -55,17 +57,26 @@ namespace Enexure.Fire.Data
 			transaction = null;
 		}
 
-		public DbCommand CreateCommand()
+		internal DbCommand CreateCommand()
 		{
 			var command = connection.CreateCommand();
-			command.Transaction = GetCurrentTransaction();
 			return command;
+		}
+
+		public bool IsConnectionOpen
+		{
+			get
+			{
+				return connection.State != ConnectionState.Closed &&
+				       connection.State != ConnectionState.Broken;
+			}
 		}
 
 		public void Dispose()
 		{
 			EndCurrentTransaction();
 			connection.Close();
+			connection.Dispose();
 		}
 
 		public void Commit()
