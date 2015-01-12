@@ -22,7 +22,7 @@ task Compile -depends Version, Clean {
 task Version -depends Clean {
 
 	$versionSourceFile = "E:\Projects\Enexure.Fire.Data\src\Enexure.Fire.Data\Version.json"
-	$versionDetail = Get-Content (ConvertFrom-Json $versionSourceFile)
+	$versionDetail = ConvertFrom-Json (Get-Content $versionSourceFile)
 	$version = "$($versionDetail.Major).$($versionDetail.Minor).$($versionDetail.Patch).$build"
 
 	$projectDir = "$solutionDir\src\Enexure.Fire.Data\Properties"
