@@ -22,9 +22,12 @@ task Compile -depends Version, Clean {
 task Version -depends Clean {
 
 	$versionSourceFile = "$solutionDir\src\Enexure.Fire.Data\Version.json"
-	$versionDetail = ConvertFrom-Json (Get-Content $versionSourceFile)
+	$versionSourceFileContents = [string](Get-Content $versionSourceFile)
+	$versionDetail = ConvertFrom-Json $versionSourceFileContents
 	$version = "$($versionDetail.Major).$($versionDetail.Minor).$($versionDetail.Patch).$build"
 
+	Write-Host "Version: $version"
+	
 	$projectDir = "$solutionDir\src\Enexure.Fire.Data\Properties"
 	$versionFile = "$projectDir\AssemblyVersion.cs"
 
@@ -40,10 +43,11 @@ task Version -depends Clean {
 	# [assembly: AssemblyVersion("1.0.*")]
 	
 	$versionFileContents = 
+	"using System.Reflection;" + "`n" +
 	"[assembly: AssemblyVersion(`"$version`")]" + "`n" +
 	"[assembly: AssemblyFileVersion(`"$version`")]"
 
-	Set-Content $versionFile $versionFile
+	Set-Content $versionFile $versionFileContents
 }
 
 task Clean { 
