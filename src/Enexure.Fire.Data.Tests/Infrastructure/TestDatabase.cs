@@ -7,8 +7,8 @@ namespace Enexure.Fire.Data.Tests
 {
 	public static class TestDatabase
 	{
-		private static readonly string templateMasterConnectionString = @"Data Source={0};Initial Catalog=master;{1}";
-		private static readonly string templateDatabaseConnectionString = @"Data Source={0};AttachDBFileName={2};Initial Catalog={1};{3}";
+		private static readonly string templateMasterConnectionString = @"Server={0};Database=master;{1}";
+		private static readonly string templateDatabaseConnectionString = @"Server={0};AttachDBFileName={2};Database={1};{3}";
 
 		private static string server;
 		private static string databaseName;
@@ -27,7 +27,7 @@ namespace Enexure.Fire.Data.Tests
 
 			server = isAppveyor ? "(local)\\SQL2012SP1" : "(LocalDB)\\v11.0";
 
-			var auth = isAppveyor ? "User ID=sa;Password=Password12!" : "Integrated Security=True";
+			var auth = isAppveyor ? "User ID=sa;Password=Password12!;" : "Integrated Security=True;";
 
 			databaseName = "TestDb";
 			databasePath = Path.Combine(outputDirectory, String.Format(@"{0}.mdf", databaseName));	
@@ -39,8 +39,13 @@ namespace Enexure.Fire.Data.Tests
 
 		public static void Create()
 		{
-			Database.DeleteDatabase(masterConnectionString, databaseName, databasePath);
-			Database.CreateDatabase(masterConnectionString, databaseName, databasePath);
+			try {
+				Database.DeleteDatabase(masterConnectionString, databaseName, databasePath);
+				Database.CreateDatabase(masterConnectionString, databaseName, databasePath);
+			} catch (Exception ex) {
+				
+				throw new Exception(string.format("Could not connect to {0}", masterConnectionString), ex)
+			}
 		}
 
 		public static void Delete()
