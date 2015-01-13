@@ -44,7 +44,7 @@ namespace Enexure.Fire.Data.Tests
 				Database.CreateDatabase(masterConnectionString, databaseName, databasePath);
 			} catch (Exception ex) {
 				
-				throw new Exception(string.format("Could not connect to {0}", masterConnectionString), ex)
+				throw new Exception(string.format("Could not connect to {0}", masterConnectionString), ex);
 			}
 		}
 
