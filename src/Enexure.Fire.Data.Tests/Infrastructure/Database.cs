@@ -4,17 +4,14 @@ using System.IO;
 
 namespace Enexure.Fire.Data.Tests
 {
-	static class LocalDb
+	static class Database
 	{
-		private static readonly string masterConnectionString = @"Data Source=(LocalDB)\v11.0;Initial Catalog=master;Integrated Security=True";
-		private static readonly string templateConnectionString = @"Data Source=(LocalDB)\v11.0;AttachDBFileName={1};Initial Catalog={0};Integrated Security=True;";
-
-		public static SqlConnection GetConnection(string databaseName, string databasePath)
+		public static SqlConnection GetConnection(string connectionString)
 		{
-			return new SqlConnection(String.Format(templateConnectionString, databaseName, databasePath));
+			return new SqlConnection(connectionString);
 		}
 
-		public static bool CreateDatabase(string databaseName, string dbFileName)
+		public static bool CreateDatabase(string masterConnectionString, string databaseName, string dbFileName)
 		{
 			using (var connection = new SqlConnection(masterConnectionString)) {
 				connection.Open();
@@ -27,9 +24,9 @@ namespace Enexure.Fire.Data.Tests
 			return File.Exists(dbFileName);
 		}
 
-		public static void DeleteDatabase(string databaseName, string dbFileName)
+		public static void DeleteDatabase(string masterConnectionString, string databaseName, string dbFileName)
 		{
-			DetachDatabase(databaseName);
+			DetachDatabase(masterConnectionString, databaseName);
 
 			if (File.Exists(dbFileName)) {
 				File.Delete(dbFileName);
@@ -42,7 +39,7 @@ namespace Enexure.Fire.Data.Tests
 			}
 		}
 
-		public static void DetachDatabase(string databaseName)
+		public static void DetachDatabase(string masterConnectionString, string databaseName)
 		{
 			using (var connection = new SqlConnection(masterConnectionString)) {
 				connection.Open();

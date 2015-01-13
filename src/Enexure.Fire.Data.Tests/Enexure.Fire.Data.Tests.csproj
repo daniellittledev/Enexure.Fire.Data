@@ -63,7 +63,7 @@
     <Compile Include="LazyConnectionTests.cs" />
     <Compile Include="ParametersTests.cs" />
     <Compile Include="QueryTests.cs" />
-    <Compile Include="Infrastructure\LocalDb.cs" />
+    <Compile Include="Infrastructure\Database.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Infrastructure\TestDatabase.cs" />
     <Compile Include="Infrastructure\TestSetup.cs" />

@@ -13,15 +13,6 @@ namespace Enexure.Fire.Data.Tests
 	[SetUpFixture]
 	public class TestFixtureSetUp
 	{
-		private readonly string databasePath;
-		private readonly string databaseName;
-
-		public TestFixtureSetUp()
-		{
-			databasePath = TestDatabase.DatabasePath;
-			databaseName = TestDatabase.DatabaseName;
-		}
-
 		/// <summary>
 		/// SetUp; run once before all tests in a test fixture.
 		/// Run once for each TestFixture in the same namespace.
@@ -29,9 +20,9 @@ namespace Enexure.Fire.Data.Tests
 		[SetUp]
 		public void RunBeforeAnyTests()
 		{
-			LocalDb.DeleteDatabase(databaseName, databasePath);
-			LocalDb.CreateDatabase(databaseName, databasePath);
+			TestDatabase.Create();
 		}
+
 		/// <summary>
 		/// TearDown; run once after all tests in a test fixture.
 		/// Run once for each TestFixture in the same namespace.
@@ -39,8 +30,7 @@ namespace Enexure.Fire.Data.Tests
 		[TearDown]
 		public void RunAfterAnyTests()
 		{
-			SqlConnection.ClearAllPools();
-			LocalDb.DeleteDatabase(databaseName, databasePath);
+			TestDatabase.Delete();
 		}
 	}
 }
