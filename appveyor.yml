@@ -7,3 +7,8 @@ build:
   publish_nuget: true
   publish_nuget_symbols: true
   verbosity: minimal
+deploy:
+- provider: Environment
+  name: Public Nuget
+  on:
+    branch: master
