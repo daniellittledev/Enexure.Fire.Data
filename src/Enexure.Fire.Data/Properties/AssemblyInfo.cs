@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Enexure.Fire.Data")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A wrapper for System.Data.Common and DbConnection that provides a simplified convenient API")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Enexure")]
 [assembly: AssemblyProduct("Enexure.Fire.Data")]

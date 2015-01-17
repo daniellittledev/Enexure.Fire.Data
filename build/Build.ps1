@@ -4,7 +4,6 @@ $nuget = "$PSScriptRoot\nuget\nuget.exe"
 
 properties {
 	$solutionDir = Resolve-Path "$PSScriptRoot\.."
-	$build = "0"
 }
 
 task default -depends Package
