@@ -7,7 +7,7 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/Lavinski/Enexure.Fire.Data/blob/master/License.md</licenseUrl>
     <projectUrl>https://github.com/Lavinski/Enexure.Fire.Data/</projectUrl>
-    <iconUrl>https://github.com/Lavinski/Enexure.Fire.Data/blob/master/Logo.png</iconUrl>
+    <iconUrl>https://raw.github.com/Lavinski/Enexure.Fire.Data/blob/master/Logo.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <tags>Database ADO.NET async</tags>
