@@ -1,6 +1,8 @@
 Enexure.Fire.Data
 =================
-[![Build status](https://ci.appveyor.com/api/projects/status/dk0sbl83c7u19rpt?svg=true)](https://ci.appveyor.com/project/Daniel45729/enexure-fire-data)
+[![Build status](https://ci.appveyor.com/api/projects/status/dk0sbl83c7u19rpt/branch/master?svg=true)](https://ci.appveyor.com/project/Daniel45729/enexure-fire-data/branch/master)
+
+> PM> Install-Package [Enexure.Fire.Data](https://www.nuget.org/packages/Enexure.Fire.Data/)
 
 Fire.Data is a wrapper over System.Data that providies session like transaction management. Simplified command creation and simplified async usage.
 

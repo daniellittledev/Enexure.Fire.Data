@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Enexure.Fire.Data")]
 [assembly: AssemblyDescription("A wrapper for System.Data.Common and DbConnection that provides a simplified convenient API")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Enexure")]
+[assembly: AssemblyCompany("Daniel Little")]
 [assembly: AssemblyProduct("Enexure.Fire.Data")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
