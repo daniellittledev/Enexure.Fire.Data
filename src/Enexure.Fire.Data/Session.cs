@@ -25,6 +25,11 @@ namespace Enexure.Fire.Data
 			this.unitOfWork = unitOfWork;
 		}
 
+		public ICommand CreateCommand(DbCommand dbCommand)
+		{
+			return new Command(dbCommand, unitOfWork);
+		}
+
 		public ICommand CreateCommand(string sql, params object[] parameters)
 		{
 			var command = unitOfWork.CreateCommand();
