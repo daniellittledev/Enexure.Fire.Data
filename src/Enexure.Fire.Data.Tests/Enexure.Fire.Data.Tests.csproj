@@ -60,6 +60,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ScalarTests.cs" />
     <Compile Include="LazyConnectionTests.cs" />
     <Compile Include="ParametersTests.cs" />
     <Compile Include="QueryTests.cs" />

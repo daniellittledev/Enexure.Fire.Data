@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -61,11 +62,11 @@ namespace Enexure.Fire.Data
 
 		private static Dictionary<string, Action<object, object>> GetSetters(Type type)
 		{
-			var setters = new Dictionary<string, Action<object, object>>();
-			foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.SetProperty)) {
-				setters.Add(prop.Name, (o, v) => CreateSetMethod(prop)(o, v));
-			}
-			return setters;
+			return type
+				.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
+				.ToDictionary<PropertyInfo, string, Action<object, object>>(
+					prop => prop.Name,
+					prop => ((o, v) => CreateSetMethod(prop)(o, v)));
 		}
 
 		private static Action<object, object> CreateSetMethod(PropertyInfo propertyInfo)
