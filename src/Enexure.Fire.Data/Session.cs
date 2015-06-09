@@ -97,7 +97,7 @@ namespace Enexure.Fire.Data
 				var value = parameter.GetValue(parametersDictionaryObject);
 
 				if (value != null && value != DBNull.Value) {
-					param.DbType = typeMap[parameter.PropertyType];
+					param.DbType = GetDatabaseType(parameter.PropertyType);
 					param.Value = value;
 				} else {
 					param.Value = DBNull.Value;
@@ -111,6 +111,16 @@ namespace Enexure.Fire.Data
 			}
 		}
 
+		private static DbType GetDatabaseType(Type type)
+		{
+			DbType dbType;
+			if (typeMap.TryGetValue(type, out dbType))
+			{
+				return dbType;
+			}
+			throw new KeyNotFoundException(string.Format("No database type matching {0} is supported", type.Name));
+		}
+		
 		private static IEnumerable<IDbDataParameter> GetParameters(IDbCommand command, IEnumerable<object> parameters)
 		{
 			var i = 0;
@@ -120,7 +130,7 @@ namespace Enexure.Fire.Data
 				var param = command.CreateParameter();
 
 				if (parameter != null && parameter != DBNull.Value) {
-					param.DbType = typeMap[parameter.GetType()];
+					param.DbType = GetDatabaseType(parameter.GetType());
 					param.Value = parameter;
 				} else {
 					param.Value = DBNull.Value;

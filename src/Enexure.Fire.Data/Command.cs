@@ -8,9 +8,9 @@ namespace Enexure.Fire.Data
 	public class Command : ICommand
 	{
 		private readonly DbCommand command;
-		private readonly UnitOfWork unitOfWork;
+        private readonly UnitOfWork unitOfWork;
 
-		internal Command(DbCommand command, UnitOfWork unitOfWork)
+        internal Command(DbCommand command, UnitOfWork unitOfWork)
 		{
 			this.command = command;
 			this.unitOfWork = unitOfWork;
