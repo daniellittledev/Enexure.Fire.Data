@@ -16,7 +16,8 @@ namespace Enexure.Fire.Data
 
 				var key = keyMappings[i];
 				try {
-					rowMapper(key, dataReader.GetValue(i));
+					var value = dataReader.GetValue(i);
+					rowMapper(key, value == DBNull.Value ? null : value);
 				} catch (Exception ex) {
 					throw new CouldNotSetPropertyException(key, ex);
 				}
