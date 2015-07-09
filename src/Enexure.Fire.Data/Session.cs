@@ -183,6 +183,7 @@ namespace Enexure.Fire.Data
 			{typeof (char), DbType.StringFixedLength},
 			{typeof (Guid), DbType.Guid},
 			{typeof (DateTime), DbType.DateTime},
+			{typeof (DateTime), DbType.DateTime2},
 			{typeof (DateTimeOffset), DbType.DateTimeOffset},
 			{typeof (byte[]), DbType.Binary},
 			{typeof (byte?), DbType.Byte},

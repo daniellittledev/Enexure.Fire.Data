@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -12,7 +13,13 @@ namespace Enexure.Fire.Data
 			var rowMapper = mapper.GetMapper(row);
 
 			for (var i = 0; i < length; i++) {
-				rowMapper(keyMappings[i], dataReader.GetValue(i));
+
+				var key = keyMappings[i];
+				try {
+					rowMapper(key, dataReader.GetValue(i));
+				} catch (Exception ex) {
+					throw new CouldNotSetPropertyException(key, ex);
+				}
 			}
 
 			list.Add((T)row);
@@ -23,6 +30,15 @@ namespace Enexure.Fire.Data
 			return Enumerable
 				.Range(0, length)
 				.ToDictionary(index => index, dataReader.GetName);
+		}
+	}
+
+	internal class CouldNotSetPropertyException : Exception
+	{
+		public CouldNotSetPropertyException(string key, Exception exception)
+			: base(string.Format("Could not set property {0}", key), exception)
+		{
+			
 		}
 	}
 }
