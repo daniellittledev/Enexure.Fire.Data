@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Enexure.Fire.Data
 {
-	public interface IDataResultAsync
+	public interface IDataResultAsync : IDisposable
 	{
 		Task<IList<T>> ToListAsync<T>();
 

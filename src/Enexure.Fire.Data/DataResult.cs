@@ -36,5 +36,10 @@ namespace Enexure.Fire.Data
 		{
 			return ToList<T>().SingleOrDefault();
 		}
+
+		public void Dispose()
+		{
+			dataReader.Dispose();
+		}
 	}
 }

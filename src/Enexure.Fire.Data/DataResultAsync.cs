@@ -8,16 +8,16 @@ namespace Enexure.Fire.Data
 {
 	public class DataResultAsync : DataResultBase, IDataResultAsync
 	{
-		private readonly Func<Task<DbDataReader>> readerProvider;
+		private readonly DbDataReader dataReader;
 
-		public DataResultAsync(Func<Task<DbDataReader>> readerProvider)
+		public DataResultAsync(DbDataReader dataReader)
 		{
-			this.readerProvider = readerProvider;
+			this.dataReader = dataReader;
 		}
 
 		public async Task<IList<T>> ToListAsync<T>()
 		{
-			var reader = await readerProvider();
+			var reader = dataReader;
 
 			using (reader) {
 				var list = new List<T>();
@@ -42,5 +42,10 @@ namespace Enexure.Fire.Data
 		{
 			return (await ToListAsync<T>()).SingleOrDefault();
 		}
+
+	    public void Dispose()
+	    {
+            dataReader.Dispose();
+        }
 	}
 }

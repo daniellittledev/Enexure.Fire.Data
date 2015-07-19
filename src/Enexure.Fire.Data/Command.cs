@@ -73,20 +73,16 @@ namespace Enexure.Fire.Data
 			return new DataResult(command.ExecuteReader());
 		}
 
-		public IDataResultAsync ExecuteAsyncQuery()
+		public Task<IDataResultAsync> ExecuteQueryAsync()
 		{
-			return new DataResultAsync(async () => {
-				await ApplyTransactionAsync();
-				return await command.ExecuteReaderAsync();
-			});
+			return ExecuteQueryAsync(CancellationToken.None);
 		}
 
-		public IDataResultAsync ExecuteAsyncQuery(CancellationToken cancellationToken)
+		public async Task<IDataResultAsync> ExecuteQueryAsync(CancellationToken cancellationToken)
 		{
-			return new DataResultAsync(async () => {
-				await ApplyTransactionAsync(cancellationToken);
-				return await command.ExecuteReaderAsync(cancellationToken);
-			});
+			await ApplyTransactionAsync(cancellationToken);
+			var reader = await command.ExecuteReaderAsync(cancellationToken);
+			return new DataResultAsync(reader);
 		}
 	}
 }

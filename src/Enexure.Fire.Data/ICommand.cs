@@ -15,7 +15,7 @@ namespace Enexure.Fire.Data
 		Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken);
 
 		IDataResult ExecuteQuery();
-		IDataResultAsync ExecuteAsyncQuery();
-		IDataResultAsync ExecuteAsyncQuery(CancellationToken cancellationToken);
+		Task<IDataResultAsync> ExecuteQueryAsync();
+		Task<IDataResultAsync> ExecuteQueryAsync(CancellationToken cancellationToken);
 	}
 }

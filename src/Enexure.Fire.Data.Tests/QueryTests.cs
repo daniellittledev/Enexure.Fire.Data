@@ -26,9 +26,13 @@ namespace Enexure.Fire.Data.Tests
 				session.CreateCommand(createTableSql).ExecuteNonQuery();
 				session.CreateCommand(insertIntoSql).ExecuteNonQuery();
 
-				var row = await session.CreateCommand("Select * From TableA where Id = ?", 1).ExecuteAsyncQuery().SingleAsync<dynamic>();
+			    using (var command = await session.CreateCommand("Select * From TableA where Id = ?", 1).ExecuteQueryAsync())
+			    {
 
-				((int)row.Id).Should().Be(1);
+			        var row = command.SingleAsync<dynamic>();
+
+			        ((int) row.Id).Should().Be(1);
+			    }
 			}
 
 		}

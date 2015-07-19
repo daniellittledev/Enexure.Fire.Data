@@ -25,11 +25,14 @@ namespace Enexure.Fire.Data.Tests
 				session.CreateCommand(createTableSql).ExecuteNonQuery();
 				session.CreateCommand(insertIntoSql, 1, "value", true).ExecuteNonQuery();
 
-				var row = await session.CreateCommand("Select * From MultipleParametersShouldMatchTypes_Table").ExecuteAsyncQuery().SingleAsync<dynamic>();
+			    using (var command = await session.CreateCommand("Select * From MultipleParametersShouldMatchTypes_Table").ExecuteQueryAsync())
+			    {
+                    var row = await command.SingleAsync<dynamic>();
 
-				((int)row.Id).Should().Be(1);
-				((string)row.String).Should().Be("value");
-				((bool)row.Boolean).Should().Be(true);
+                    ((int)row.Id).Should().Be(1);
+                    ((string)row.String).Should().Be("value");
+                    ((bool)row.Boolean).Should().Be(true);
+                }
 			}
 
 		}

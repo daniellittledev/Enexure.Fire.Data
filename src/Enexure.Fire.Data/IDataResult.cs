@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Enexure.Fire.Data
 {
-	public interface IDataResult
+	public interface IDataResult : IDisposable
 	{
 		IList<T> ToList<T>();
 
