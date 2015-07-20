@@ -9,7 +9,13 @@ namespace Enexure.Fire.Data.Tests
 	public class QueryTests
 	{
 
-		[Test]
+        class RawRow
+	    {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
+
+	    [Test]
 		public async Task SampleQueryTest()
 		{
 			using (var unitOfWork = new UnitOfWork(TestDatabase.GetConnection())) {
@@ -28,8 +34,7 @@ namespace Enexure.Fire.Data.Tests
 
 			    using (var command = await session.CreateCommand("Select * From TableA where Id = ?", 1).ExecuteQueryAsync())
 			    {
-
-			        var row = command.SingleAsync<dynamic>();
+			        var row = await command.SingleAsync<RawRow>();
 
 			        ((int) row.Id).Should().Be(1);
 			    }
