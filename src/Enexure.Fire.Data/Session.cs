@@ -35,7 +35,7 @@ namespace Enexure.Fire.Data
 			var command = unitOfWork.CreateCommand();
 
 			command
-				.SetText(HandleParameters(command, sql))
+				.SetText(HandleParameters(command, sql, parameters.Length))
 				.SetParameters(GetParameters(command, parameters));
 
 			return new Command(command, unitOfWork);
@@ -44,30 +44,40 @@ namespace Enexure.Fire.Data
 		public ICommand CreateCommand(string sql, IEnumerable<object> parameters)
 		{
 			var command = unitOfWork.CreateCommand();
+			var parametersList = parameters.ToList();
 
 			command
-				.SetText(HandleParameters(command, sql))
-				.SetParameters(GetParameters(command, parameters));
+				.SetText(HandleParameters(command, sql, parametersList.Count))
+				.SetParameters(GetParameters(command, parametersList));
 
 			return new Command(command, unitOfWork);
 		}
 
-		public ICommand CreateCommand(string sql, IEnumerable<IParameter> parameters)
+		public ICommand CreateCommandWithParameters(string sql, IEnumerable<Parameter> parameters)
 		{
 			var command = unitOfWork.CreateCommand();
+			var parametersList = parameters.ToList();
 
 			command
-				.SetText(HandleParameters(command, sql))
-				.SetParameters(parameters.Select(x => {
-					var p = command.CreateParameter();
-					p.DbType = x.DbType;
-					p.IsNullable = x.IsNullable;
-					p.ParameterName = x.ParameterName;
-					p.Value = x.Value;
-					return p;
-				}));
+				.SetText(HandleParameters(command, sql, parametersList))
+				.SetParameters(parametersList.Select(x => CreateDbParameter(command.CreateParameter(), x)));
 
 			return new Command(command, unitOfWork);
+		}
+
+		public ICommand CreateCommandWithParameters(string sql, params Parameter[] parameters)
+		{
+			return CreateCommandWithParameters(sql, (IEnumerable<Parameter>) parameters);
+		}
+
+		private DbParameter CreateDbParameter(DbParameter dbParameter, Parameter parameter)
+		{
+			dbParameter.DbType = parameter.DbType;
+			dbParameter.IsNullable = parameter.IsNullable;
+			dbParameter.ParameterName = parameter.ParameterName;
+			dbParameter.Value = parameter.Value;
+
+			return dbParameter;
 		}
 
 		public void Commit()
@@ -89,26 +99,9 @@ namespace Enexure.Fire.Data
 
 		private static IEnumerable<IDbDataParameter> GetParametersFromObject(IDbCommand command, object parametersDictionaryObject)
 		{
-			var supportsNamedParameters = command is SqlCommand;
 			var properties = parametersDictionaryObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-
-			foreach (var parameter in properties) {
-				var param = command.CreateParameter();
-				var value = parameter.GetValue(parametersDictionaryObject);
-
-				if (value != null && value != DBNull.Value) {
-					param.DbType = GetDatabaseType(parameter.PropertyType);
-					param.Value = value;
-				} else {
-					param.Value = DBNull.Value;
-				}
-
-				if (supportsNamedParameters) {
-					param.ParameterName = string.Format("{0}", parameter.Name);
-				}
-
-				yield return param;
-			}
+			var parameters = properties.Select(x => new Parameter(x.GetValue(parametersDictionaryObject)));
+			return GetParameters(command, parameters);
 		}
 
 		private static DbType GetDatabaseType(Type type)
@@ -145,17 +138,29 @@ namespace Enexure.Fire.Data
 			}
 		}
 
-		private static string HandleParameters(IDbCommand command, string text)
+		private static string HandleParameters(IDbCommand command, string text, IEnumerable<Parameter> parameters)
+		{
+			var expectedUnnamedParameters = parameters.Count(x => string.IsNullOrEmpty(x.ParameterName));
+			return HandleParameters(command, text, expectedUnnamedParameters);
+		}
+
+		private static string HandleParameters(IDbCommand command, string text, int expectedUnnamedParameters)
 		{
 			var supportsNamedParameters = command is SqlCommand;
 
-			if (supportsNamedParameters) {
+			if (supportsNamedParameters)
+			{
 				var sql = new StringBuilder(text);
 
 				var i = 0;
-				for (var j = 0; j < sql.Length; j++) {
-					if (sql[j] == '?') {
-						sql.Replace("?", string.Format("@p{0}", i), j, 1);
+				for (var j = 0; j < sql.Length && expectedUnnamedParameters > 0; j++) {
+					if (sql[j] == '?')
+					{
+						var parameterName = string.Format("@p{0}", i);
+						sql.Replace("?", parameterName, j, 1);
+						
+						j += parameterName.Length - 1;
+						expectedUnnamedParameters -= 1;
 						i += 1;
 					}
 				}

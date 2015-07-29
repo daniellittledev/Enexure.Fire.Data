@@ -17,18 +17,24 @@ namespace Enexure.Fire.Data
 
 		public async Task<IList<T>> ToListAsync<T>()
 		{
-			var reader = dataReader;
+			var list = new List<T>();
+			var mapper = new Mapper(typeof(T));
+			var keyMappings = GetKeyMappings(dataReader);
 
-			using (reader) {
-				var list = new List<T>();
-				var mapper = new Mapper(typeof(T));
-				var length = reader.FieldCount;
-				var keyMappings = GetKeyMappings(reader, length);
+			while (await dataReader.ReadAsync()) {
+				list.Add(GetValue<T>(dataReader, mapper, keyMappings));
+			}
+			return list;
+		}
 
-				while (await reader.ReadAsync()) {
-					GetValue(reader, mapper, length, keyMappings, list);
-				}
-				return list;
+		public async Task ToCallbacks<T>(Action<T> callback)
+		{
+			var mapper = new Mapper(typeof(T));
+			var keyMappings = GetKeyMappings(dataReader);
+
+			while (await dataReader.ReadAsync())
+			{
+				callback(GetValue<T>(dataReader, mapper, keyMappings));
 			}
 		}
 
@@ -43,9 +49,9 @@ namespace Enexure.Fire.Data
 			return (await ToListAsync<T>()).SingleOrDefault();
 		}
 
-	    public void Dispose()
-	    {
-            dataReader.Dispose();
-        }
+		public void Dispose()
+		{
+			dataReader.Dispose();
+		}
 	}
 }

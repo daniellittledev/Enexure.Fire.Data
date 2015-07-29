@@ -21,14 +21,14 @@ namespace Enexure.Fire.Data.Tests
 	Name varchar(20)
 )";
 
-                var insertIntoSql = @"Insert Into ScalarTable Values (1, 'One')";
+				var insertIntoSql = @"Insert Into ScalarTable Values (1, 'One')";
 
 				session.CreateCommand(createTableSql).ExecuteNonQuery();
 				session.CreateCommand(insertIntoSql).ExecuteNonQuery();
 
-                var value = await session.CreateCommand("Select Id From ScalarTable where Id = ?", 1).ExecuteScalarAsync<int>();
+				var value = await session.CreateCommand("Select Id From ScalarTable where Id = ?", 1).ExecuteScalarAsync<int>();
 
-                value.Should().Be(1);
+				value.Should().Be(1);
 			}
 
 		}

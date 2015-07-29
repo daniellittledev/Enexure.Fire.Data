@@ -17,7 +17,8 @@ namespace Enexure.Fire.Data
 		{
 			Dynamic,
 			Dictionary,
-			Object
+			Object,
+			Array
 		}
 
 		public Mapper(Type type)
@@ -25,17 +26,22 @@ namespace Enexure.Fire.Data
 			this.type = type;
 
 			// Dynamic is passed in as Object
-			if (type == typeof(object)) {
+			if (type == typeof(object) || type == typeof(ExpandoObject)) {
 				resultType = ResultType.Dynamic;
+
 			} else if (type.IsAssignableFrom(typeof(IDictionary<string, object>))) {
 				resultType = ResultType.Dictionary;
+
+			} else if (type.IsArray) {
+				resultType = ResultType.Array;
+
 			} else {
 				resultType = ResultType.Object;
 				setters = GetSetters(type);
 			}
 		}
 
-		public object GetRowInstance()
+		public object GetRowInstance(int columnCount)
 		{
 			if (resultType == ResultType.Dynamic) {
 				return new ExpandoObject();
@@ -43,6 +49,11 @@ namespace Enexure.Fire.Data
 
 			if (resultType == ResultType.Dictionary) {
 				return Activator.CreateInstance(type);
+			}
+
+			if (resultType == ResultType.Array)
+			{
+				return Activator.CreateInstance(type, columnCount);
 			}
 
 			return Activator.CreateInstance(type);

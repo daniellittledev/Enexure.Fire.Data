@@ -7,6 +7,8 @@ namespace Enexure.Fire.Data
 	{
 		IList<T> ToList<T>();
 
+		IEnumerable<T> ToEnumerable<T>();
+
 		T Single<T>();
 
 		T SingleOrDefault<T>() where T : class;

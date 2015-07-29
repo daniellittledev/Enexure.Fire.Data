@@ -15,15 +15,18 @@ namespace Enexure.Fire.Data
 
 		public IList<T> ToList<T>()
 		{
-			var list = new List<T>();
-			var mapper = new Mapper(typeof(T));
-			var length = dataReader.FieldCount;
-			var keyMappings = GetKeyMappings(dataReader, length);
+			return ToEnumerable<T>().ToList();
+		}
 
-			while (dataReader.Read()) {
-				GetValue(dataReader, mapper, length, keyMappings, list);
+		public IEnumerable<T> ToEnumerable<T>()
+		{
+			var mapper = new Mapper(typeof(T));
+			var keyMappings = GetKeyMappings(dataReader);
+
+			while (dataReader.Read())
+			{
+				yield return GetValue<T>(dataReader, mapper, keyMappings);
 			}
-			return list;
 		}
 
 		public T Single<T>()

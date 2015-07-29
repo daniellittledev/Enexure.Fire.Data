@@ -9,7 +9,8 @@ namespace Enexure.Fire.Data
 		ICommand CreateCommand(DbCommand dbCommand);
 		ICommand CreateCommand(string sql, params object[] parameters);
 		ICommand CreateCommand(string sql, IEnumerable<object> parameters);
-		ICommand CreateCommand(string sql, IEnumerable<IParameter> parameters);
+		ICommand CreateCommandWithParameters(string sql, IEnumerable<Parameter> parameters);
+		ICommand CreateCommandWithParameters(string sql, params Parameter[] parameters);
 
 		void Commit();
 		void Rollback();

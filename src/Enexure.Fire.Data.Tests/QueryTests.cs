@@ -9,13 +9,13 @@ namespace Enexure.Fire.Data.Tests
 	public class QueryTests
 	{
 
-        class RawRow
-	    {
-            public int Id { get; set; }
-            public string Name { get; set; }
-        }
+		class RawRow
+		{
+			public int Id { get; set; }
+			public string Name { get; set; }
+		}
 
-	    [Test]
+		[Test]
 		public async Task SampleQueryTest()
 		{
 			using (var unitOfWork = new UnitOfWork(TestDatabase.GetConnection())) {
@@ -32,12 +32,12 @@ namespace Enexure.Fire.Data.Tests
 				session.CreateCommand(createTableSql).ExecuteNonQuery();
 				session.CreateCommand(insertIntoSql).ExecuteNonQuery();
 
-			    using (var command = await session.CreateCommand("Select * From TableA where Id = ?", 1).ExecuteQueryAsync())
-			    {
-			        var row = await command.SingleAsync<RawRow>();
+				using (var command = await session.CreateCommand("Select * From TableA where Id = ?", 1).ExecuteQueryAsync())
+				{
+					var row = await command.SingleAsync<RawRow>();
 
-			        ((int) row.Id).Should().Be(1);
-			    }
+					((int) row.Id).Should().Be(1);
+				}
 			}
 
 		}

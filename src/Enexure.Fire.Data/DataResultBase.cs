@@ -7,29 +7,32 @@ namespace Enexure.Fire.Data
 {
 	public abstract class DataResultBase
 	{
-		internal static void GetValue<T>(DbDataReader dataReader, Mapper mapper, int length, Dictionary<int, string> keyMappings, List<T> list)
+		internal static T GetValue<T>(DbDataReader dataReader, Mapper mapper, Dictionary<int, string> keyMappings)
 		{
-			var row = mapper.GetRowInstance();
+			var len = dataReader.FieldCount;
+			var row = mapper.GetRowInstance(len);
 			var rowMapper = mapper.GetMapper(row);
 
-			for (var i = 0; i < length; i++) {
-
+			for (var i = 0; i < len; i++)
+			{
 				var key = keyMappings[i];
-				try {
+				try
+				{
 					var value = dataReader.GetValue(i);
 					rowMapper(key, value == DBNull.Value ? null : value);
-				} catch (Exception ex) {
+				}
+				catch (Exception ex)
+				{
 					throw new CouldNotSetPropertyException(key, ex);
 				}
 			}
-
-			list.Add((T)row);
+			return (T)row;
 		}
 
-		protected static Dictionary<int, string> GetKeyMappings(DbDataReader dataReader, int length)
+		protected static Dictionary<int, string> GetKeyMappings(DbDataReader dataReader)
 		{
 			return Enumerable
-				.Range(0, length)
+				.Range(0, dataReader.FieldCount)
 				.ToDictionary(index => index, dataReader.GetName);
 		}
 	}

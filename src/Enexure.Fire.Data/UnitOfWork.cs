@@ -68,7 +68,7 @@ namespace Enexure.Fire.Data
 			get
 			{
 				return connection.State != ConnectionState.Closed &&
-				       connection.State != ConnectionState.Broken;
+					   connection.State != ConnectionState.Broken;
 			}
 		}
 
