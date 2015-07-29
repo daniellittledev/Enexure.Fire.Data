@@ -19,10 +19,9 @@ namespace Enexure.Fire.Data
 		{
 			var list = new List<T>();
 			var mapper = new Mapper(typeof(T));
-			var keyMappings = GetKeyMappings(dataReader);
 
 			while (await dataReader.ReadAsync()) {
-				list.Add(GetValue<T>(dataReader, mapper, keyMappings));
+				list.Add(mapper.GetRow<T>(dataReader));
 			}
 			return list;
 		}
@@ -30,11 +29,10 @@ namespace Enexure.Fire.Data
 		public async Task ToCallbacks<T>(Action<T> callback)
 		{
 			var mapper = new Mapper(typeof(T));
-			var keyMappings = GetKeyMappings(dataReader);
 
 			while (await dataReader.ReadAsync())
 			{
-				callback(GetValue<T>(dataReader, mapper, keyMappings));
+				callback(mapper.GetRow<T>(dataReader));
 			}
 		}
 

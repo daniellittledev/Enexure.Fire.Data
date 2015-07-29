@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +42,7 @@ namespace Enexure.Fire.Data
 			}
 		}
 
-		public object GetRowInstance(int columnCount)
+        public object GetRowInstance(int columnCount)
 		{
 			if (resultType == ResultType.Dynamic) {
 				return new ExpandoObject();
@@ -51,15 +52,49 @@ namespace Enexure.Fire.Data
 				return Activator.CreateInstance(type);
 			}
 
-			if (resultType == ResultType.Array)
-			{
+			if (resultType == ResultType.Array) {
 				return Activator.CreateInstance(type, columnCount);
 			}
 
 			return Activator.CreateInstance(type);
 		}
 
-		public Action<string, object> GetMapper(object instance)
+        public T GetRow<T>(DbDataReader dataReader)
+        {
+            var len = dataReader.FieldCount;
+            var row = GetRowInstance(len);
+
+            if (resultType == ResultType.Array) {
+
+                var array = (object[])row;
+                for (var i = 0; i < len; i++) {
+
+                    var rawValue = dataReader.GetValue(i);
+                    var value = rawValue == DBNull.Value ? null : rawValue;
+                    array[i] = value;
+                }
+
+                return (T)(object)array;
+            } else {
+
+                for (var i = 0; i < len; i++) {
+
+                    var rawValue = dataReader.GetValue(i);
+                    var value = rawValue == DBNull.Value ? null : rawValue;
+
+                    var key = dataReader.GetName(i);
+                    try {
+                        GetMapper(row)(key, value);
+                    } catch (Exception ex) {
+                        throw new CouldNotSetPropertyException(key, ex);
+                    }
+                }
+
+                return (T)row;
+            }
+        }
+
+        public Action<string, object> GetMapper(object instance)
 		{
 			// Dynamic is passed in as Object
 			if (resultType == ResultType.Dynamic || resultType == ResultType.Dictionary) {

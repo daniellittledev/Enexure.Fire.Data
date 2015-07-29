@@ -10,6 +10,7 @@ namespace Enexure.Fire.Data
 
 		Task ToCallbacks<T>(Action<T> callback);
 
+
 		Task<T> SingleAsync<T>();
 
 		Task<T> SingleOrDefaultAsync<T>() where T : class;

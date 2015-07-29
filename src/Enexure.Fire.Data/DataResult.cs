@@ -21,11 +21,10 @@ namespace Enexure.Fire.Data
 		public IEnumerable<T> ToEnumerable<T>()
 		{
 			var mapper = new Mapper(typeof(T));
-			var keyMappings = GetKeyMappings(dataReader);
 
 			while (dataReader.Read())
 			{
-				yield return GetValue<T>(dataReader, mapper, keyMappings);
+				yield return mapper.GetRow<T>(dataReader);
 			}
 		}
 
