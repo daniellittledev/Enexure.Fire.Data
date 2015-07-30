@@ -37,10 +37,26 @@ namespace Enexure.Fire.Data
 
 		internal async Task<DbTransaction> GetOrCreateTransactionAsync(CancellationToken cancellationToken)
 		{
+			var spinner = WaitForConnection(cancellationToken);
+			var timeout = Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+			if (await Task.WhenAny(spinner, timeout) == timeout)
+			{
+				throw new TimeoutException("Timeout expired while waiting for the connection to open");
+			}
+
 			if (connection.State == ConnectionState.Closed) {
 				await connection.OpenAsync(cancellationToken);
 			}
 			return GetTransaction();
+		}
+
+		private async Task WaitForConnection(CancellationToken cancellationToken)
+		{
+			while (!cancellationToken.IsCancellationRequested 
+				&& connection.State == ConnectionState.Connecting)
+			{
+				await Task.Delay(1, cancellationToken);
+			}
 		}
 
 		private DbTransaction GetTransaction()
