@@ -84,5 +84,10 @@ namespace Enexure.Fire.Data
 			var reader = await command.ExecuteReaderAsync(cancellationToken);
 			return new DataResultAsync(reader);
 		}
+
+		public void Dispose()
+		{
+			command.Dispose();
+		}
 	}
 }
