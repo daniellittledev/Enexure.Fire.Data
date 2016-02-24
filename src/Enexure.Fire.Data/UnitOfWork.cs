@@ -13,12 +13,19 @@ namespace Enexure.Fire.Data
 
 		private DbTransaction transaction;
 
-		public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+        public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+            : this(connection, null, isolationLevel)
+        {
+
+        }
+
+        public UnitOfWork(DbConnection connection, DbTransaction transaction, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
 		{
 			if (connection == null) throw new ArgumentNullException("connection", "You must specify a connection");
 
 			this.connection = connection;
 			this.isolationLevel = isolationLevel;
+            this.transaction = transaction;
 		}
 
 		internal DbTransaction GetOrCreateTransaction()
