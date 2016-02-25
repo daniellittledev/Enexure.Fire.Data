@@ -9,13 +9,16 @@ namespace Enexure.Fire.Data
 	public class UnitOfWork : IUnitOfWork
 	{
 		private readonly IsolationLevel isolationLevel;
-	    private DbTransaction transaction;
+		private DbTransaction transaction;
 
-	    public DbConnection Connection { get; }
+		public DbConnection Connection { get; }
 
-	    public DbTransaction Transaction => GetOrCreateTransaction();
+		public DbTransaction Transaction
+		{
+			get { return GetOrCreateTransaction(); }
+		}
 
-	    public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+		public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
 			: this(connection, null, isolationLevel)
 		{
 
@@ -76,10 +79,10 @@ namespace Enexure.Fire.Data
 		private void EndCurrentTransaction()
 		{
 			if (transaction != null) {
-                transaction.Dispose();
+				transaction.Dispose();
 			}
 
-            transaction = null;
+			transaction = null;
 		}
 
 		internal DbCommand CreateCommand()
@@ -108,7 +111,7 @@ namespace Enexure.Fire.Data
 		{
 			if (transaction != null) {
 
-                transaction.Commit();
+				transaction.Commit();
 				EndCurrentTransaction();
 			}
 		}
@@ -117,7 +120,7 @@ namespace Enexure.Fire.Data
 		{
 			if (transaction != null) {
 
-                transaction.Rollback();
+				transaction.Rollback();
 				EndCurrentTransaction();
 			}
 		}
