@@ -10,10 +10,14 @@ namespace Enexure.Fire.Data
 	{
 		private readonly IsolationLevel isolationLevel;
 		private DbTransaction transaction;
+	    private readonly DbConnection connection;
 
-		public DbConnection Connection { get; }
+	    public DbConnection Connection
+	    {
+	        get { return connection; }
+	    }
 
-		public DbTransaction Transaction
+	    public DbTransaction Transaction
 		{
 			get { return GetOrCreateTransaction(); }
 		}
@@ -28,7 +32,7 @@ namespace Enexure.Fire.Data
 		{
 			if (connection == null) throw new ArgumentNullException("connection", "You must specify a connection");
 
-			this.Connection = connection;
+			this.connection = connection;
 			this.isolationLevel = isolationLevel;
 			this.transaction = transaction;
 		}
