@@ -8,30 +8,32 @@ namespace Enexure.Fire.Data
 {
 	public class UnitOfWork : IUnitOfWork
 	{
-		private readonly DbConnection connection;
 		private readonly IsolationLevel isolationLevel;
+	    private DbTransaction transaction;
 
-		private DbTransaction transaction;
+	    public DbConnection Connection { get; }
 
-        public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
-            : this(connection, null, isolationLevel)
-        {
+	    public DbTransaction Transaction => GetOrCreateTransaction();
 
-        }
+	    public UnitOfWork(DbConnection connection, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+			: this(connection, null, isolationLevel)
+		{
 
-        public UnitOfWork(DbConnection connection, DbTransaction transaction, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+		}
+
+		public UnitOfWork(DbConnection connection, DbTransaction transaction, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
 		{
 			if (connection == null) throw new ArgumentNullException("connection", "You must specify a connection");
 
-			this.connection = connection;
+			this.Connection = connection;
 			this.isolationLevel = isolationLevel;
-            this.transaction = transaction;
+			this.transaction = transaction;
 		}
 
 		internal DbTransaction GetOrCreateTransaction()
 		{
-			if (connection.State == ConnectionState.Closed) {
-				connection.Open();
+			if (Connection.State == ConnectionState.Closed) {
+				Connection.Open();
 			}
 
 			return GetTransaction();
@@ -51,8 +53,8 @@ namespace Enexure.Fire.Data
 				throw new TimeoutException("Timeout expired while waiting for the connection to open");
 			}
 
-			if (connection.State == ConnectionState.Closed) {
-				await connection.OpenAsync(cancellationToken);
+			if (Connection.State == ConnectionState.Closed) {
+				await Connection.OpenAsync(cancellationToken);
 			}
 			return GetTransaction();
 		}
@@ -60,7 +62,7 @@ namespace Enexure.Fire.Data
 		private async Task WaitForConnection(CancellationToken cancellationToken)
 		{
 			while (!cancellationToken.IsCancellationRequested 
-				&& connection.State == ConnectionState.Connecting)
+				&& Connection.State == ConnectionState.Connecting)
 			{
 				await Task.Delay(1, cancellationToken);
 			}
@@ -68,21 +70,21 @@ namespace Enexure.Fire.Data
 
 		private DbTransaction GetTransaction()
 		{
-			return transaction ?? (transaction = connection.BeginTransaction(isolationLevel));
+			return transaction ?? (transaction = Connection.BeginTransaction(isolationLevel));
 		}
 
 		private void EndCurrentTransaction()
 		{
 			if (transaction != null) {
-				transaction.Dispose();
+                transaction.Dispose();
 			}
 
-			transaction = null;
+            transaction = null;
 		}
 
 		internal DbCommand CreateCommand()
 		{
-			var command = connection.CreateCommand();
+			var command = Connection.CreateCommand();
 			return command;
 		}
 
@@ -90,23 +92,23 @@ namespace Enexure.Fire.Data
 		{
 			get
 			{
-				return connection.State != ConnectionState.Closed &&
-					   connection.State != ConnectionState.Broken;
+				return Connection.State != ConnectionState.Closed &&
+					   Connection.State != ConnectionState.Broken;
 			}
 		}
 
 		public void Dispose()
 		{
 			EndCurrentTransaction();
-			connection.Close();
-			connection.Dispose();
+			Connection.Close();
+			Connection.Dispose();
 		}
 
 		public void Commit()
 		{
 			if (transaction != null) {
 
-				transaction.Commit();
+                transaction.Commit();
 				EndCurrentTransaction();
 			}
 		}
@@ -115,7 +117,7 @@ namespace Enexure.Fire.Data
 		{
 			if (transaction != null) {
 
-				transaction.Rollback();
+                transaction.Rollback();
 				EndCurrentTransaction();
 			}
 		}
