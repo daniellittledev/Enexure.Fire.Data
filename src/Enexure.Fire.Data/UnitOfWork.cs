@@ -10,14 +10,14 @@ namespace Enexure.Fire.Data
 	{
 		private readonly IsolationLevel isolationLevel;
 		private DbTransaction transaction;
-	    private readonly DbConnection connection;
+		private readonly DbConnection connection;
 
-	    public DbConnection Connection
-	    {
-	        get { return connection; }
-	    }
+		public DbConnection Connection
+		{
+			get { return connection; }
+		}
 
-	    public DbTransaction Transaction
+		public DbTransaction Transaction
 		{
 			get { return GetOrCreateTransaction(); }
 		}
