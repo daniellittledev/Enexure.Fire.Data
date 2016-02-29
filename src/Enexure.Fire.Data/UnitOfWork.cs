@@ -114,18 +114,14 @@ namespace Enexure.Fire.Data
 		public void Commit()
 		{
 			if (transaction != null) {
-
 				transaction.Commit();
-				EndCurrentTransaction();
 			}
 		}
 
 		public void Rollback()
 		{
 			if (transaction != null) {
-
 				transaction.Rollback();
-				EndCurrentTransaction();
 			}
 		}
 
