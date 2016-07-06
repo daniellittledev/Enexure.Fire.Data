@@ -106,13 +106,22 @@ namespace Enexure.Fire.Data
 			return (k, v) => setters[k](instance, v);
 		}
 
+		private static Dictionary<string, Dictionary<string, Action<object, object>>> settersCache = new Dictionary<string, Dictionary<string, Action<object, object>>>();
+
 		private static Dictionary<string, Action<object, object>> GetSetters(Type type)
 		{
-			return type
+			Dictionary<string, Action<object, object>> setters;
+			if (settersCache.TryGetValue(type.FullName, out setters)) {
+				return setters;
+			}
+
+			setters = type
 				.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
-				.ToDictionary<PropertyInfo, string, Action<object, object>>(
-					prop => prop.Name,
-					prop => ((o, v) => CreateSetMethod(prop)(o, v)));
+				.ToDictionary(prop => prop.Name, CreateSetMethod);
+
+			settersCache.Add(type.FullName, setters);
+
+			return setters;
 		}
 
 		private static Action<object, object> CreateSetMethod(PropertyInfo propertyInfo)
