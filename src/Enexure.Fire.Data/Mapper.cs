@@ -43,7 +43,7 @@ namespace Enexure.Fire.Data
 			}
 		}
 
-        public object GetRowInstance(int columnCount)
+		public object GetRowInstance(int columnCount)
 		{
 			if (resultType == ResultType.Dynamic) {
 				return new ExpandoObject();
@@ -60,42 +60,42 @@ namespace Enexure.Fire.Data
 			return Activator.CreateInstance(type);
 		}
 
-        public T GetRow<T>(DbDataReader dataReader)
-        {
-            var len = dataReader.FieldCount;
-            var row = GetRowInstance(len);
+		public T GetRow<T>(DbDataReader dataReader)
+		{
+			var len = dataReader.FieldCount;
+			var row = GetRowInstance(len);
 
-            if (resultType == ResultType.Array) {
+			if (resultType == ResultType.Array) {
 
-                var array = (object[])row;
-                for (var i = 0; i < len; i++) {
+				var array = (object[])row;
+				for (var i = 0; i < len; i++) {
 
-                    var rawValue = dataReader.GetValue(i);
-                    var value = rawValue == DBNull.Value ? null : rawValue;
-                    array[i] = value;
-                }
+					var rawValue = dataReader.GetValue(i);
+					var value = rawValue == DBNull.Value ? null : rawValue;
+					array[i] = value;
+				}
 
-                return (T)(object)array;
-            } else {
+				return (T)(object)array;
+			} else {
 
-                for (var i = 0; i < len; i++) {
+				for (var i = 0; i < len; i++) {
 
-                    var rawValue = dataReader.GetValue(i);
-                    var value = rawValue == DBNull.Value ? null : rawValue;
+					var rawValue = dataReader.GetValue(i);
+					var value = rawValue == DBNull.Value ? null : rawValue;
 
-                    var key = dataReader.GetName(i);
-                    try {
-                        GetMapper(row)(key, value);
-                    } catch (Exception ex) {
-                        throw new CouldNotSetPropertyException(key, ex);
-                    }
-                }
+					var key = dataReader.GetName(i);
+					try {
+						GetMapper(row)(key, value);
+					} catch (Exception ex) {
+						throw new CouldNotSetPropertyException(key, ex);
+					}
+				}
 
-                return (T)row;
-            }
-        }
+				return (T)row;
+			}
+		}
 
-        public Action<string, object> GetMapper(object instance)
+		public Action<string, object> GetMapper(object instance)
 		{
 			// Dynamic is passed in as Object
 			if (resultType == ResultType.Dynamic || resultType == ResultType.Dictionary) {
@@ -107,22 +107,28 @@ namespace Enexure.Fire.Data
 			return (k, v) => setters[k](instance, v);
 		}
 
-		private static IDictionary<string, IReadOnlyDictionary<string, Action<object, object>>> settersCache = new ConcurrentDictionary<string, IReadOnlyDictionary<string, Action<object, object>>>();
+		private static readonly IDictionary<string, IReadOnlyDictionary<string, Action<object, object>>> settersCache = new ConcurrentDictionary<string, IReadOnlyDictionary<string, Action<object, object>>>();
 
 		private static IReadOnlyDictionary<string, Action<object, object>> GetSetters(Type type)
 		{
-			IReadOnlyDictionary<string, Action<object, object>> setters;
-			if (settersCache.TryGetValue(type.FullName, out setters)) {
+			lock (settersCache)
+			{
+
+				IReadOnlyDictionary<string, Action<object, object>> setters;
+				if (settersCache.TryGetValue(type.FullName, out setters))
+				{
+					return setters;
+				}
+
+				setters = type
+					.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
+					.ToDictionary(prop => prop.Name, CreateSetMethod);
+
+
+				settersCache.Add(type.FullName, setters);
+
 				return setters;
 			}
-
-			setters = type
-				.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance)
-				.ToDictionary(prop => prop.Name, CreateSetMethod);
-
-			settersCache.Add(type.FullName, setters);
-
-			return setters;
 		}
 
 		private static Action<object, object> CreateSetMethod(PropertyInfo propertyInfo)
