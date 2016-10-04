@@ -12,7 +12,7 @@ namespace Enexure.Fire.Data
 	{
 		private readonly Type type;
 		readonly ResultType resultType;
-		readonly Dictionary<string, Action<object, object>> setters;
+		readonly IReadOnlyDictionary<string, Action<object, object>> setters;
 
 		private enum ResultType
 		{
@@ -106,7 +106,7 @@ namespace Enexure.Fire.Data
 			return (k, v) => setters[k](instance, v);
 		}
 
-		private static IDictionary<string, Dictionary<string, Action<object, object>>> settersCache = new ConcurrentDictionary<string, IReadOnlyDictionary<string, Action<object, object>>>();
+		private static IDictionary<string, IReadOnlyDictionary<string, Action<object, object>>> settersCache = new ConcurrentDictionary<string, IReadOnlyDictionary<string, Action<object, object>>>();
 
 		private static IReadOnlyDictionary<string, Action<object, object>> GetSetters(Type type)
 		{
