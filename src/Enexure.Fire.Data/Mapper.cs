@@ -106,11 +106,11 @@ namespace Enexure.Fire.Data
 			return (k, v) => setters[k](instance, v);
 		}
 
-		private static Dictionary<string, Dictionary<string, Action<object, object>>> settersCache = new Dictionary<string, Dictionary<string, Action<object, object>>>();
+		private static IDictionary<string, Dictionary<string, Action<object, object>>> settersCache = new ConcurrentDictionary<string, IReadOnlyDictionary<string, Action<object, object>>>();
 
-		private static Dictionary<string, Action<object, object>> GetSetters(Type type)
+		private static IReadOnlyDictionary<string, Action<object, object>> GetSetters(Type type)
 		{
-			Dictionary<string, Action<object, object>> setters;
+			IReadOnlyDictionary<string, Action<object, object>> setters;
 			if (settersCache.TryGetValue(type.FullName, out setters)) {
 				return setters;
 			}
